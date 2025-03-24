@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-argo-example
+spec:
+  selector:
+    app: flask-argo-example
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

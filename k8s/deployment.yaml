@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-argo-example
+  labels:
+    app: flask-argo-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-argo-example
+  template:
+    metadata:
+      labels:
+        app: flask-argo-example
+    spec:
+      containers:
+        - name: flask-argo-example
+          image: python:3.9-slim
+          command: ["python", "app.py"]
+          ports:
+            - containerPort: 5000
