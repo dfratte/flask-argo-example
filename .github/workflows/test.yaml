@@ -3,21 +3,18 @@ name: ci
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the 'main' branch
-  pull_request:
-    branches:
-      - main  # Trigger workflow on pull request to the 'main' branch
+      - main
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest  # Use a GitHub-hosted runner
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2  # Checkout the code from the repository
+    - name: Check out repository
+      uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
       with:
         python-version: '3.10'
 
@@ -36,12 +33,14 @@ jobs:
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v2
       with:
-        username: ${{ github.actor }}  # GitHub username
-        password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to authenticate
+        registry: ghcr.io
+        username: ${{ github.actor }}  # Use GitHub username
+        password: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token
 
-    - name: Build and Push Docker Image to GHCR
+    - name: Build Docker image
       run: |
-        # Define the image name with the GitHub Container Registry (GHCR) URL
-        IMAGE_NAME=ghcr.io/${{ github.repository }}/flask-argo-example:latest
-        docker build -t $IMAGE_NAME .  # Build the Docker image
-        docker push $IMAGE_NAME  # Push the image to GHCR
+        docker build -t ghcr.io/${{ github.repository }}/flask-argo-example:latest .
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        docker push ghcr.io/${{ github.repository }}/flask-argo-example:latest
